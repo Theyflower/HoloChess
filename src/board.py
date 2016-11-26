@@ -1,7 +1,10 @@
 import piece
-class HoloChessBoard:
+
+class Holoboard:
 	def __init__(self, gametype=None):
 		self.center = CenterTile()
+		self.outer = Orbit(self.center)
+		self.inner = Orbit(self.outer)
 
 
 	def remove_piece(self, tile):
@@ -10,8 +13,8 @@ class HoloChessBoard:
 
 class Tile: #probably doing abstract classes in python wrong
 	def __init__(self contents=piece.empty()):
-		self.contents = conents
-		if not (isinstance(contents,piece.Piece) or contents == None):
+		self.contents = conents	
+	if not (isinstance(contents,piece.Piece) or contents == None):
 			raise InvalidTileContents("Tile has contents of type {}. Should be Piece or None".format(type(contents)))
 
 	@property
@@ -24,7 +27,7 @@ class Tile: #probably doing abstract classes in python wrong
 			self._contents = value
 
 class OrbitTile(Tile):
-	def __init__(self, orbit, contents=piece.empty(), rimnode=None, hubnode=None, twnode=None, wsnode=None):
+	def __init__(self, contents=piece.empty(), rimnode=None, hubnode=None, twnode=None, wsnode=None):
 		'''
 		rimnode refers to the node that is 'rimwards' from this node, towards an outer orbit
 		hubnode refers to the node that is 'hunwards' from this node, towards an inner orbit
@@ -55,19 +58,20 @@ class OrbitTile(Tile):
 
 
 class CenterTile(Tile):
-	def __init__(self, orbit, contents=piece.empty()):
-		Tile.___init__(self,contents,orbit)
+	def __init__(self, orbit=None, contents=piece.empty()):
+		Tile.___init__(self,contents)
 		if isinstance(orbit, Orbit):
 			for tile in Orbit.tiles:
 				tile.hubnode = self
+		elif orbit != None: #this is bad logic @todo(aaron) condense the if and elif here into a single if
+			raise OrbitIsntAnOrbit("You tried to construct a CenterTile with an orbit of type {}. You can only construct it with an orbit of type Orbit or None")
 		else:
-			raise OrbitIsntAnOrbit("You tried to construct a CenterTile with an orbit of type {}. You can only construct it with an orbit of type Orbit.")
-
+			self.orbit = orbit
 		for tile in orbit.tiles:
 			tile.hubnode = self
 
 class Orbit:
-	def __init__(self, hub, rim, size=12):
+	def __init__(self, hub, rim=None, size=12):
 		"""
 		hub should always be a CenterTile or an Orbit
 		rim should always be an Orbit or None
@@ -85,6 +89,7 @@ class Orbit:
 			if rim.size == self.size:
 				for i in range(size):
 					self.tiles[i].connectrim(rim.tiles[i])
+				rim.hub = self
 			else:
 				raise UnmatchingOrbitSizes("You tried to construct an Orbit of size {} with a rim of size {}.".format(self.size,rim.size))
 		elif rim == None:
@@ -94,14 +99,27 @@ class Orbit:
 			raise OrbitRimInvalidType("You tried to construct an Orbit with a rim of type {}. It should only be type Orbit or type None.".format(type(rim)))
 
 		if isinstance(hub, Orbit):
-			for i in range(size):
-				self.tiles[i].connecthub(hub.tiles[i])
-
+			if hub.size == self.size
+				for i in range(size):
+					self.tiles[i].connecthub(hub.tiles[i])
+				hub.rom = self
+			else:
+				raise UnmatchingOrbitSizes("You tried to construct an Orbit of size {} with a hub orbit of size {}.".format(self.size,hub.size))
+		elif isinstance(hub, CenterTile):
+			for tile in tiles:
+				tile.hubnode = hub
+		else:
+			raise OrbitHubInvalidType()
+	#cool, it has a sexy init function, but what other things will it need?
+	#time to put more code into Holoboard later on..
 
 class UnmatchingOrbitSizes(Exception):
 	pass
 
 class OrbitRimInvalidType(Exception):
+	pass
+
+class OrbitHubInvalidType(Exception):
 	pass
 
 class OrbitIsntAnOrbit(Exception): #this is the worst name of an exception type ever
