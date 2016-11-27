@@ -2,10 +2,9 @@ import piece
 
 class Holoboard:
 	def __init__(self, gametype=None, numorbits=2, orbitsize=12):
-		self.center = CenterTile()
 		sef.numorbits = numorbits
 		self.orbitsize = orbitsize
-		self.orbits = []
+		self.orbits = [CenterTile()]
 		for i in range(orbits):
 			if i == 0:
 				self.orbits.append(Orbit(self.center, orbitsize))
@@ -13,7 +12,7 @@ class Holoboard:
 				self.orbits.append(Orbit(self.orbits[i-1], orbitsize))
 
 
-	def remove_piece(self, orbit, tileid=None):
+	def set_tile_contents(self, orbit, tileid=None, contents=piece.empty()): #todo(aaron) improve param naming convention. orbitid and tileid or orbit and tile? why did I mix
 	'''
 	removes a piece at the specified tile from the board
 	preconditions:
@@ -24,20 +23,32 @@ class Holoboard:
 		tileid is always present if orbit is greather than 0
 			@todo(aaron) write documentation on what tileid is for
 	'''
+		if not isinstance(contents, piece.Piece):
+			raise InvalidTileContents("Cannot set type {} as tile contents.".format(type(contents)))
 		if orbit == 0:
-			self.center.conents = piece.empty():
+			if tileid != None:
+				raise InvalidTileid("Cannot ")
+			self.orbits[0] = contents
 			#todo(aaron) decide if it should throw an exception when tileid isn't None but orbit is 0
-		elif orbit in [i for i in range(numorbits)]:
+		elif orbit in [i for i in range(1,self.numorbits)]:
 			if tileid == None:
-				raise InvalidTileid("Tile id is ")
-			elif tileid not in [i for i in range(orbits[orbit.size])]
-
+				raise InvalidTileid("{} is not a valid tileid".format(tileid))
+			elif tileid >= orbits[orbit]:
+				raise InvalidOrbitValue("Orbit value is {}, which it should not be.")
+		else:
+			self.orbits[orbit].tiles[tileid] = contents
+			#@todo(aaron) refactor code so that...
+			'''
+			CenterTile is replaced by an orbit with size 1
+			orbits can dynamically link to other orbits of different sizes 
+			spend a bunch of time drawing on dry erase whiteboards making this work
+			'''
 
 
 class Tile: #probably doing abstract classes in python wrong
 	def __init__(self contents=piece.empty()):
 		self.contents = conents	
-	if not (isinstance(contents,piece.Piece) or contents == None):
+	if not isinstance(contents,piece.Piece:
 			raise InvalidTileContents("Tile has contents of type {}. Should be Piece or None".format(type(contents)))
 
 	@property
@@ -58,6 +69,7 @@ class OrbitTile(Tile):
 		wsnode refers to the node that is 'widdershins' (counterclockwise) froom this node in the same orbit
 		'''
 		Tile.__init__(self, contents)
+		#todo(aaron) make these into properties
 		self.rimnode = rimnode
 		self.hubnode = hubnode
 		self.twnode = twnode
@@ -137,6 +149,12 @@ class Orbit: #todo(aaron): decide if it's a good idea to have an array of object
 	#cool, it has a sexy init function, but what other things will it need?
 	#time to put more code into Holoboard later on..
 
+'''
+@todo(aaron):
+* Condense these, there's definitely many of these that can be condensed
+* (maybe?) Add docsctrings explaining when these should be used
+* (maybe?) 
+'''
 class UnmatchingOrbitSizes(Exception):
 	pass
 
@@ -147,10 +165,13 @@ class OrbitHubInvalidType(Exception):
 	pass
 
 class OrbitIsntAnOrbit(Exception): #this is the worst name of an exception type ever
-	pass
+	pass #seriously this is SO BAD
 
 class InvalidTileContents(Exception):
 	pass
 
 class InvalidTileid(Exception):
+	pass
+
+class InvalidOrbitValue(Exception):
 	pass
