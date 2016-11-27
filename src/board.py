@@ -1,15 +1,38 @@
 import piece
 
 class Holoboard:
-	def __init__(self, gametype=None):
+	def __init__(self, gametype=None, numorbits=2, orbitsize=12):
 		self.center = CenterTile()
-		self.outer = Orbit(self.center)
-		self.inner = Orbit(self.outer)
+		sef.numorbits = numorbits
+		self.orbitsize = orbitsize
+		self.orbits = []
+		for i in range(orbits):
+			if i == 0:
+				self.orbits.append(Orbit(self.center, orbitsize))
+			else:
+				self.orbits.append(Orbit(self.orbits[i-1], orbitsize))
 
 
-	def remove_piece(self, tile):
-	'''removes a piece at the specified tile from the board'''
-		pass
+	def remove_piece(self, orbit, tileid=None):
+	'''
+	removes a piece at the specified tile from the board
+	preconditions:
+		orbit is an integer between 0 and 2 inclusive
+			smaller numbers are closer to the hub, higher are closer to rim
+			0 is the hub tile, 1 is inner orbit, 2 is outer orbit
+			@todo(aaron) make dynamically sized boards
+		tileid is always present if orbit is greather than 0
+			@todo(aaron) write documentation on what tileid is for
+	'''
+		if orbit == 0:
+			self.center.conents = piece.empty():
+			#todo(aaron) decide if it should throw an exception when tileid isn't None but orbit is 0
+		elif orbit in [i for i in range(numorbits)]:
+			if tileid == None:
+				raise InvalidTileid("Tile id is ")
+			elif tileid not in [i for i in range(orbits[orbit.size])]
+
+
 
 class Tile: #probably doing abstract classes in python wrong
 	def __init__(self contents=piece.empty()):
@@ -40,6 +63,7 @@ class OrbitTile(Tile):
 		self.twnode = twnode
 		self.wsnode = wsnode
 
+	#todo(aaron) make the connectXX functions be nice properties and not do this weird java style encapsulation
 	def connecttw(tile):
 		self.twnode = tile
 		tile.wsnode = self
@@ -70,7 +94,7 @@ class CenterTile(Tile):
 		for tile in orbit.tiles:
 			tile.hubnode = self
 
-class Orbit:
+class Orbit: #todo(aaron): decide if it's a good idea to have an array of objects that act like a linkedlist
 	def __init__(self, hub, rim=None, size=12):
 		"""
 		hub should always be a CenterTile or an Orbit
@@ -126,4 +150,7 @@ class OrbitIsntAnOrbit(Exception): #this is the worst name of an exception type 
 	pass
 
 class InvalidTileContents(Exception):
+	pass
+
+class InvalidTileid(Exception):
 	pass
