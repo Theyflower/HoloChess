@@ -6,10 +6,22 @@ def empty():
 
 
 class Piece:
+	'''
+	the fuck does Piece need?
+	a Dejazik (name?) one has...
 	name
+	attack
 	defence
+	movement
 	player
+
+	A couriter (solved asf) one has...
+	name
+	player
+	movement(1,ALWAYS 1)
 	isking
+	WHAT IF... courtier counted number of kings so that you could have 3 kngs or something
+	'''
 	def __init__(self, name="EmptyPiece", player=0, movement=0):
 		self.name = name
 		self.player = player
