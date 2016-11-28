@@ -1,5 +1,6 @@
 import piece
 
+
 class Holoboard:
 	def __init__(self, gametype=None, numorbits=2, orbitsize=12):
 		sef.numorbits = numorbits
@@ -11,8 +12,7 @@ class Holoboard:
 			else:
 				self.orbits.append(Orbit(self.orbits[i-1], orbitsize))
 
-
-	def set_tile_contents(self, orbit, tileid=None, contents=piece.empty()): #todo(aaron) improve param naming convention. orbitid and tileid or orbit and tile? why did I mix
+	def set_tile_contents(self, orbit, tileid=None, contents=piece.mpty()): #todo(aaron) improve param naming convention. orbitid and tileid or orbit and tile? why did I mix
 	'''
 	removes a piece at the specified tile from the board
 	preconditions:
@@ -60,6 +60,7 @@ class Tile: #probably doing abstract classes in python wrong
 				raise InvalidTileContents("Tried to set a tile's contents to type {}.".format(type(value)))
 			self._contents = value
 
+
 class OrbitTile(Tile):
 	def __init__(self, contents=piece.empty(), rimnode=None, hubnode=None, twnode=None, wsnode=None):
 		'''
@@ -105,6 +106,7 @@ class CenterTile(Tile):
 			self.orbit = orbit
 		for tile in orbit.tiles:
 			tile.hubnode = self
+
 
 class Orbit: #todo(aaron): decide if it's a good idea to have an array of objects that act like a linkedlist
 	def __init__(self, hub, rim=None, size=12):
@@ -153,25 +155,31 @@ class Orbit: #todo(aaron): decide if it's a good idea to have an array of object
 @todo(aaron):
 * Condense these, there's definitely many of these that can be condensed
 * (maybe?) Add docsctrings explaining when these should be used
-* (maybe?) 
+* (maybe?) Put these into their own file (seems like an awesome idea)
 '''
 class UnmatchingOrbitSizes(Exception):
 	pass
 
+
 class OrbitRimInvalidType(Exception):
 	pass
+
 
 class OrbitHubInvalidType(Exception):
 	pass
 
+
 class OrbitIsntAnOrbit(Exception): #this is the worst name of an exception type ever
 	pass #seriously this is SO BAD
+
 
 class InvalidTileContents(Exception):
 	pass
 
+
 class InvalidTileid(Exception):
 	pass
+
 
 class InvalidOrbitValue(Exception):
 	pass
